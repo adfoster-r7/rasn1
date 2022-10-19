@@ -26,3 +26,7 @@ group :rubocop do
   gem 'rubocop', '~> 1.0'
   gem 'rubocop-performance', '~> 1.0'
 end
+
+group :development do
+  gem 'pry-byebug'
+end
