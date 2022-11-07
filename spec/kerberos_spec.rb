@@ -18,7 +18,7 @@ require 'base64'
 module Kerberos
   # Adding additional methods to supplement RASN1's dsl
   class KerberosModel < RASN1::Model
-    def self.sequence_name
+    def self.model_name
       name.split('::').last.to_sym
     end
 
@@ -132,7 +132,7 @@ module Kerberos
   #            name-string     [1] SEQUENCE OF KerberosString
   #    }
   class PrincipalName < KerberosModel
-    sequence sequence_name,
+    sequence model_name,
              content: [
                kerberos_int32(:name_type, explicit: 0, constructed: true),
                sequence_of(:name_string, KerberosString, explicit: 1, constructed: true)
@@ -149,7 +149,7 @@ module Kerberos
   #            cipher  [2] OCTET STRING -- ciphertext
   #    }
   class EncryptedData < KerberosModel
-    sequence sequence_name,
+    sequence model_name,
              content: [
                kerberos_int32(:etype, explicit: 0, constructed: true),
                kerberos_uint32(:kvno, explicit: 1, constructed: true, optional: true),
@@ -162,7 +162,7 @@ module Kerberos
   #            keyvalue        [1] OCTET STRING
   #    }
   class EncryptionKey < KerberosModel
-    sequence sequence_name,
+    sequence model_name,
              content: [
                kerberos_int32(:keytype, explicit: 0, constructed: true),
                octet_string(:keyvalue, explicit: 1, constructed: true)
@@ -174,7 +174,7 @@ module Kerberos
   #            checksum        [1] OCTET STRING
   #    }
   class Checksum < KerberosModel
-    sequence sequence_name,
+    sequence model_name,
              content: [
                kerberos_int32(:cksumtype, explicit: 0, constructed: true),
                octet_string(:checksum, explicit: 1, constructed: true)
@@ -190,7 +190,7 @@ module Kerberos
   #           address         [1] OCTET STRING
   #    }
   class HostAddress < KerberosModel
-    sequence sequence_name,
+    sequence model_name,
              content: [
                kerberos_int32(:addr_type, explicit: 0, constructed: true),
                octet_string(:address, explicit: 1, constructed: true)
@@ -219,7 +219,7 @@ module Kerberos
   #       }
   # @see AuthorizationData
   class AuthorizationDataItem < KerberosModel
-    sequence sequence_name,
+    sequence model_name,
              content: [
                kerberos_int32(:ad_type, explicit: 0, constructed: true),
                octet_string(:ad_data, explicit: 1, constructed: true)
@@ -256,7 +256,7 @@ module Kerberos
   #    }
   # TODO: Add test
   class AdKdcIssued < KerberosModel
-    sequence sequence_name,
+    sequence model_name,
              content: [
                wrapper(model(:ad_checksum, Checksum), explicit: 0, constructed: true),
                kerberos_realm(:i_realm, explicit: 1, constructed: true, optional: true),
@@ -275,7 +275,7 @@ module Kerberos
   #    }
   # TODO: Add test
   class AdAndOr < KerberosModel
-    sequence sequence_name,
+    sequence model_name,
              content: [
                kerberos_int32(:condition_count, explicit: 0, constructed: true),
                wrapper(model(:elements, AuthorizationData), explicit: 8, constructed: true)
@@ -299,7 +299,7 @@ module Kerberos
   #         padata-value    [2] OCTET STRING -- might be encoded AP-REQ
   # }
   class PreAuthData < KerberosModel
-    sequence sequence_name,
+    sequence model_name,
              content: [
                # Note first tag is 1, not 0
                kerberos_int32(:type, explicit: 1, constructed: true),
@@ -320,7 +320,7 @@ module Kerberos
   #            pausec          [1] Microseconds OPTIONAL
   #    }
   class PreAuthEncTimestampDecrypted < KerberosModel
-    sequence sequence_name,
+    sequence model_name,
              content: [
                kerberos_time(:pa_timestamp, explicit: 0, constructed: true),
                kerberos_microseconds(:pa_usec, explicit: 1, constructed: true, optional: true)
@@ -337,7 +337,7 @@ module Kerberos
   #    }
   # TODO: Add test
   class ETypeInfoEntry < KerberosModel
-    sequence sequence_name,
+    sequence model_name,
              content: [
                kerberos_int32(:etype, explicit: 0, constructed: true),
                octet_string(:salt, explicit: 1, constructed: true)
@@ -360,7 +360,7 @@ module Kerberos
   #         s2kparams       [2] OCTET STRING OPTIONAL
   # }
   class PreAuthEtypeInfo2 < KerberosModel
-    sequence sequence_name,
+    sequence model_name,
              content: [
                kerberos_int32(:etype, explicit: 0, constructed: true),
                kerberos_string(:salt, explicit: 1, constructed: true),
@@ -396,7 +396,7 @@ module Kerberos
   #         enc-part        [3] EncryptedData -- EncTicketPart
   # }
   class Ticket < KerberosModel
-    sequence sequence_name,
+    sequence model_name,
              class: :application,
              explicit: 1,
              content: [
@@ -445,7 +445,7 @@ module Kerberos
   #            contents        [1] OCTET STRING
   #    }
   class TransitedEncoding < KerberosModel
-    sequence sequence_name,
+    sequence model_name,
              content: [
                kerberos_int32(:tr_type, explicit: 0, constructed: true),
                octet_string(:contents, explicit: 1, constructed: true)
@@ -467,7 +467,7 @@ module Kerberos
   #            authorization-data      [10] AuthorizationData OPTIONAL
   #    }
   class EncTicketPart < KerberosModel
-    sequence sequence_name,
+    sequence model_name,
              class: :application,
              explicit: 3,
              content: [
@@ -539,7 +539,7 @@ module Kerberos
   #                                        -- NOTE: not empty
   # }
   class KdcReqBody < KerberosModel
-    sequence sequence_name,
+    sequence model_name,
              content: [
                kerberos_kdc_options(:kdc_options, explicit: 0, constructed: true),
                wrapper(model(:cname, PrincipalName), explicit: 1, constructed: true, optional: true),
@@ -566,7 +566,7 @@ module Kerberos
   #         req-body        [4] KDC-REQ-BODY
   # }
   class KdcReq < KerberosModel
-    sequence sequence_name,
+    sequence model_name,
              class: :application,
              explicit: 10,
              content: [
@@ -606,7 +606,7 @@ module Kerberos
   #                                 -- as appropriate
   # }
   class KdcRep < KerberosModel
-    sequence sequence_name,
+    sequence model_name,
              content: [
                integer(:pvno, explicit: 0, constructed: true),
                # 11 AS, 13 TGS
@@ -638,7 +638,7 @@ module Kerberos
   #    }
   # @see LastReq
   class LastReqItem < KerberosModel
-    sequence sequence_name,
+    sequence model_name,
              content: [
                kerberos_int32(:lr_type, explicit: 0, constructed: true),
                kerberos_time(:lr_value, explicit: 1, constructed: true)
@@ -670,7 +670,7 @@ module Kerberos
   #  }
   # Note that encrypted-pa-data [12] was added by https://datatracker.ietf.org/doc/html/rfc6806.html#section-11
   class EncKdcRepPart < KerberosModel
-    sequence sequence_name,
+    sequence model_name,
              content: [
                wrapper(model(:key, EncryptionKey), explicit: 0, constructed: true),
                wrapper(model(:last_req, LastReq), explicit: 1, constructed: true),
@@ -719,7 +719,7 @@ module Kerberos
   #         authenticator   [4] EncryptedData -- Authenticator
   # }
   class ApReq < KerberosModel
-    sequence sequence_name,
+    sequence model_name,
              class: :application,
              explicit: 14,
              content: [
@@ -744,7 +744,7 @@ module Kerberos
   #         authorization-data      [8] AuthorizationData OPTIONAL
   # }
   class Authenticator < KerberosModel
-    sequence sequence_name,
+    sequence model_name,
              class: :application,
              explicit: 2,
              content: [
@@ -770,7 +770,7 @@ module Kerberos
   #            enc-part        [2] EncryptedData -- EncAPRepPart
   #    }
   class ApRep < KerberosModel
-    sequence sequence_name,
+    sequence model_name,
              class: :application,
              explicit: 15,
              content: [
@@ -787,7 +787,7 @@ module Kerberos
   #         seq-number      [3] UInt32 OPTIONAL
   # }
   class EncApRepPart < KerberosModel
-    sequence sequence_name,
+    sequence model_name,
              class: :application,
              explicit: 27,
              content: [
@@ -822,7 +822,7 @@ module Kerberos
   #            enc-part        [3] EncryptedData -- EncKrbCredPart
   #    }
   class KrbCred < KerberosModel
-    sequence sequence_name,
+    sequence model_name,
              class: :application,
              explicit: 22,
              content: [
@@ -847,7 +847,7 @@ module Kerberos
   #            caddr           [10] HostAddresses OPTIONAL
   #    }
   class KrbCredInfo < KerberosModel
-    sequence sequence_name,
+    sequence model_name,
              content: [
                wrapper(model(:key, EncryptionKey), explicit: 0, constructed: true),
                kerberos_realm(:prealm, explicit: 1, constructed: true, optional: true),
@@ -872,7 +872,7 @@ module Kerberos
   #            r-address       [5] HostAddress OPTIONAL
   #    }
   class EncKrbCredPart < KerberosModel
-    sequence sequence_name,
+    sequence model_name,
              class: :application,
              explicit: 29,
              content: [
@@ -905,7 +905,7 @@ module Kerberos
   #            e-data          [12] OCTET STRING OPTIONAL
   #    }
   class KrbError < KerberosModel
-    sequence sequence_name,
+    sequence model_name,
              class: :application,
              explicit: 30,
              content: [
