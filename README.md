@@ -63,7 +63,7 @@ class Record < RASN1::Model
 end
 ```
 
-More comple classes may be designed by nesting simple classes. For example:
+More complex classes may be designed by nesting simple classes. For example:
 
 ```ruby
 class ComplexRecord < RASN1::Model

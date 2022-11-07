@@ -28,3 +28,6 @@ group :rubocop do
   gem 'rubocop-performance', '~> 1.0', require: false
   gem 'rubocop-rake', '~> 0.6', require: false
 end
+
+gem 'pry-byebug'
+gem "syntax_tree"
